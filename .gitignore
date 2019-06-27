@@ -1,1 +1,5 @@
-.xml
+*.xml
+*.pkl
+*.rda
+*.RHistory
+
