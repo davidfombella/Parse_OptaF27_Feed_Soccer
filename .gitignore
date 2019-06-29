@@ -2,4 +2,6 @@
 *.pkl
 *.rda
 *.RHistory
+*.csv
+
 
