@@ -148,4 +148,86 @@ library(ggrepel)
 
 
 
+  ################
+  ## GGPLOT 4
+  
+  ggplot() +
+    annotate_pitch(dimensions = pitch_opta) +
+    theme_pitch()+
+    geom_segment(data = starting_data %>%filter(n_passes>3), 
+                 aes(x = x, y = y, xend = x_end, yend = y_end,color=player_name),
+                 position="nudge", arrow = arrow(length = unit(0.1, "inches") ) )+
+    geom_point(data=starting_data, aes(x=x, y=y, size= pass_success))+ 
+    #scale_size(name = "Passes", range = c(3,7))+
+    geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), aes(x=x, y=y, label=player_name))+
+    theme(legend.direction = "vertical", legend.box = "vertical")
+  
+  
+  
+  
+  # https://stackoverflow.com/questions/35904363/offset-geom-segment-in-ggplot
+  
+  # shorten arrows
+  segmentsDf <- function(data, shorten.start, shorten.end, offset){
+  
+  data$dx = data$x_end - data$x
+  data$dy = data$y_end - data$y
+  data$dist = sqrt( data$dx^2 + data$dy^2 )
+  data$px = data$dx/data$dist
+  data$py = data$dy/data$dist
+  
+  data$x = data$x + data$px * shorten.start
+  data$y = data$y + data$py * shorten.start
+  data$x_end = data$x_end - data$px * shorten.end
+  data$y_end = data$y_end - data$py * shorten.end
+  data$x = data$x - data$py * offset
+  data$x_end = data$x_end - data$py * offset
+  data$y = data$y + data$px * offset
+  data$y_end = data$y_end + data$px * offset
+  
+  return(data)
+  }
 
+  
+  tempNodes <- data.frame ('x' = c(10, 40), 'y' = c(10, 30) )
+  ## TEST CODE
+  data <- data.frame('x' = c(10,40), 'y' = c(10,30), 'x_end' = c(40,10), 'y_end' = c(30,10))
+  
+  
+  temp <- segmentsDf(data, 2.5, 2.5, 2)
+  
+  
+  #ggplot it
+  
+  ggplot(tempNodes, aes(x = x, y = y)) + 
+    geom_point(size = 12) + xlim(0,50) + 
+    ylim(0,50) + geom_segment(data = temp, aes(x = x, xend = x_end, y = y, yend = y_end))
+  
+  
+  
+  
+  
+  
+  
+  
+  ############### short arrows players
+  
+  short_segments_Players <- segmentsDf(all_data, 2.7, 2.7, 1.15)
+  
+  
+  ## new plot shortened
+  ggplot() +
+    #annotate_pitch(dimensions = pitch_opta,fill = "black") +
+    annotate_pitch(dimensions = pitch_opta,fill = "white") +
+    theme_pitch()+
+    geom_segment(data = short_segments_Players %>%filter(n_passes>3), 
+                 aes(x = x, y = y, xend = x_end, yend = y_end,color=n_passes),size=1.3,
+                 position="nudge", arrow = arrow(length = unit(0.1, "inches") ) )+
+    geom_point(data=starting_data, aes(x=x, y=y, size= pass_success))+ 
+    #scale_size(name = "Passes", range = c(3,7))+
+    geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), aes(x=x, y=y, label=player_name))+
+    theme(legend.direction = "vertical", legend.box = "vertical")
+  
+  
+  
+  
