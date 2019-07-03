@@ -83,7 +83,12 @@ starting_data <-all_data %>%
 library(ggsoccer)
 library(ggrepel)
 
-## GGPLOT 1 Passes number and colour position
+
+
+
+################################################
+## GGPLOT 1 Passes number and colour position ##
+################################################
 
   ggplot() +
     annotate_pitch(dimensions = pitch_opta) +
@@ -91,9 +96,28 @@ library(ggrepel)
     geom_point(data=starting_data, aes(x=x, y=y, colour=position, size= pass_success))+
     geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), aes(x=x, y=y, label=player_name))
 
-################
-## GGPLOT 2 -- PASSES
-  
+
+################################################
+## GGPLOT 2 Passes number and colour position ##
+## SCALING PASS SUCCESS  #######################
+################################################
+
+ggplot() +
+  annotate_pitch(dimensions = pitch_opta) +
+  theme_pitch()+
+  geom_point(data=starting_data, aes(x=x, y=y, colour=position, size= pass_success))+
+  geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), 
+                  aes(x=x, y=y, label=paste(player_name,pass_success))) + 
+  scale_size(range = c(0, 10))+
+  theme(legend.position="none")
+
+
+
+
+######################################
+## GGPLOT 3 -- PASSES ################
+######################################
+
   ggplot() +
     annotate_pitch(dimensions = pitch_opta) +
     theme_pitch()+
@@ -103,17 +127,20 @@ library(ggrepel)
                lineend="round",
                arrow = arrow(length = unit(0.02, "npc")),
                curvature = -0.2)+
+  scale_size(range = c(0, 3))+
     geom_point(data=starting_data, aes(x=x, y=y, size= pass_success))+ 
     #scale_size(name = "Passes", range = c(3,7))+
     geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), 
                     aes(x=x, y=y, label=paste(player_name,pass_success)) ,fontface="bold")+
-    theme(legend.position="none")+
-     ggtitle("Real Madrid Passes vs Betis Min 5 passes (BET 3-5 RMA) - Player Average Position based on ball contacts  - David Fombella @bigdatasport") 
+    scale_size(range = c(0, 10))+
+   # theme(legend.position="none")+
+     ggtitle("Real Madrid vs Betis Min 5 Passes (BET 3-5 RMA) - Player Average Position based on ball contacts  - David Fombella @bigdatasport") 
   
   
   
-  # CROSSES
-  
+######################################
+## GGPLOT 4 - CROSSES  ###############
+###################################### 
   
   ggplot() +
     annotate_pitch(dimensions = pitch_opta) +
@@ -132,9 +159,10 @@ library(ggrepel)
     ggtitle("Real Madrid Crosses vs Betis (BET 3-5 RMA) - Player Average Position based on ball contacts  - David Fombella @bigdatasport") 
   
   
-  ################
-  ## GGPLOT 3
-  
+#################################
+## GGPLOT 5 GEOM LINE  ##########
+#################################  
+
   ggplot() +
     annotate_pitch(dimensions = pitch_opta) +
     theme_pitch()+
@@ -148,9 +176,11 @@ library(ggrepel)
 
 
 
-  ################
-  ## GGPLOT 4
-  
+###############################################
+## GGPLOT 6  - LINE WITHOUT SIZE ##############
+###############################################
+
+
   ggplot() +
     annotate_pitch(dimensions = pitch_opta) +
     theme_pitch()+
@@ -189,19 +219,19 @@ library(ggrepel)
   }
 
   
-  tempNodes <- data.frame ('x' = c(10, 40), 'y' = c(10, 30) )
+  #  tempNodes <- data.frame ('x' = c(10, 40), 'y' = c(10, 30) )
   ## TEST CODE
-  data <- data.frame('x' = c(10,40), 'y' = c(10,30), 'x_end' = c(40,10), 'y_end' = c(30,10))
+  # data <- data.frame('x' = c(10,40), 'y' = c(10,30), 'x_end' = c(40,10), 'y_end' = c(30,10))
   
   
-  temp <- segmentsDf(data, 2.5, 2.5, 2)
+  # temp <- segmentsDf(data, 2.5, 2.5, 2)
   
   
   #ggplot it
   
-  ggplot(tempNodes, aes(x = x, y = y)) + 
-    geom_point(size = 12) + xlim(0,50) + 
-    ylim(0,50) + geom_segment(data = temp, aes(x = x, xend = x_end, y = y, yend = y_end))
+  # ggplot(tempNodes, aes(x = x, y = y)) + 
+  #  geom_point(size = 12) + xlim(0,50) + 
+  # ylim(0,50) + geom_segment(data = temp, aes(x = x, xend = x_end, y = y, yend = y_end))
   
   
   
@@ -212,21 +242,30 @@ library(ggrepel)
   
   ############### short arrows players
   
-  short_segments_Players <- segmentsDf(all_data, 2.7, 2.7, 1.15)
+  # short_segments_Players <- segmentsDf(all_data, 2.7, 2.7, 1.15)
+  short_segments_Players <- segmentsDf(all_data, 1.5, 1.5, 1)
   
-  
+  #########################
   ## new plot shortened
+  
   ggplot() +
     #annotate_pitch(dimensions = pitch_opta,fill = "black") +
-    annotate_pitch(dimensions = pitch_opta,fill = "white") +
+    annotate_pitch(dimensions = pitch_opta,fill = "gray8") +
     theme_pitch()+
+  
     geom_segment(data = short_segments_Players %>%filter(n_passes>3), 
                  aes(x = x, y = y, xend = x_end, yend = y_end,color=n_passes),size=1.3,
                  position="nudge", arrow = arrow(length = unit(0.1, "inches") ) )+
-    geom_point(data=starting_data, aes(x=x, y=y, size= pass_success))+ 
-    #scale_size(name = "Passes", range = c(3,7))+
-    geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), aes(x=x, y=y, label=player_name))+
-    theme(legend.direction = "vertical", legend.box = "vertical")
+    # scale_colour_gradientn(colours = terrain.colors(10))+
+    scale_colour_gradient(name="Passes to a player",space = "Lab",low = "lightpink", high = "red2")+
+  #  scale_colour_manual(values = c("red", "blue", "green"))+
+    geom_point(data=starting_data, aes(x=x, y=y, size= pass_success),color="gray48")+ 
+    scale_size(name="Passes Success Total",range = c(0, 7))+
+    geom_text_repel(data=distinct(starting_data,player_name,.keep_all=TRUE), 
+                    aes(x=x, y=y, label=player_name),colour="white",fontface="bold")+
+    ggtitle("Real Madrid vs Betis Min 5 Passes (BET 3-5 RMA) - Player Average Position based on ball contacts  - David Fombella @bigdatasport") 
+  
+   # + theme(legend.position="none")
   
   
   
